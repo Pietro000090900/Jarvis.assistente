@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#06121e">
+<title>J.A.R.V.I.S. — Assistente pessoal</title>
+<style>
+:root{color-scheme:dark;--bg:#06121e;--panel:#0b1c2b;--line:#17445a;--cyan:#67e4ff;--muted:#8eabba;--text:#e8f7ff}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#103149 0,#06121e 58%);color:var(--text);font:16px system-ui,-apple-system,Segoe UI,sans-serif;min-height:100dvh}
+main{max-width:850px;margin:auto;padding:18px 14px calc(20px + env(safe-area-inset-bottom));display:flex;flex-direction:column;min-height:100dvh}
+header{display:flex;align-items:center;gap:13px;border-bottom:1px solid var(--line);padding:8px 2px 16px}
+.logo{width:52px;height:52px;border:1px solid var(--cyan);border-radius:50%;display:grid;place-items:center;color:var(--cyan);box-shadow:0 0 22px #35b9e633;font-weight:800;letter-spacing:1px}
+h1{font-size:20px;letter-spacing:3px;margin:0}header p{margin:4px 0 0;color:var(--muted);font-size:12px;letter-spacing:1.5px}
+.status{margin-left:auto;display:flex;align-items:center;gap:7px;font-size:11px;color:var(--muted)}.dot{width:7px;height:7px;border-radius:50%;background:#f2bd54}
+.core{display:grid;place-items:center;padding:22px 0 18px}.orb{width:132px;height:132px;border-radius:50%;border:1px solid #3cb9df;display:grid;place-items:center;position:relative;background:radial-gradient(circle,#16465d,#071724 70%);box-shadow:0 0 30px #22c6f433,inset 0 0 25px #22c6f422}.orb:before,.orb:after{content:"";position:absolute;border:1px solid #3cb9df66;border-radius:50%;inset:-9px}.orb:after{inset:-17px;border-style:dashed;animation:spin 25s linear infinite}.orb span{font-size:30px;color:var(--cyan);text-shadow:0 0 20px #4bdfff}.orb.listening{box-shadow:0 0 48px #22c6f477,inset 0 0 35px #22c6f455}.orb.thinking{animation:pulse 1s ease-in-out infinite alternate}
+@keyframes spin{to{transform:rotate(360deg)}}@keyframes pulse{to{filter:brightness(1.7);transform:scale(1.04)}}
+.tagline{text-align:center;color:var(--muted);font-size:13px;margin-top:9px}
+.panel{border:1px solid var(--line);border-radius:16px;background:#071724cc;overflow:hidden;display:flex;flex-direction:column;flex:1;min-height:270px}
+.panelhead{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border-bottom:1px solid #123548;color:var(--cyan);font-size:11px;letter-spacing:1.5px}
+#chat{padding:14px;display:flex;flex-direction:column;gap:12px;overflow-y:auto;max-height:43dvh;min-height:190px}
+.msg{max-width:92%;padding:11px 13px;border-radius:13px;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.5;font-size:14px}.assistant{align-self:flex-start;background:#102b3c;border:1px solid #1c4a60}.user{align-self:flex-end;background:#0b3c52;border:1px solid #1c7893}.small{font-size:11px;color:var(--muted)}
+.composer{display:flex;gap:8px;padding:12px;border-top:1px solid #123548}.composer input{min-width:0;flex:1;background:#06121e;border:1px solid #24536a;border-radius:12px;padding:13px;color:var(--text);font:inherit;outline:none}.composer input:focus{border-color:var(--cyan)}
+button{border:1px solid #27728d;background:#0b2b3c;color:var(--cyan);border-radius:12px;padding:11px 13px;font-weight:650;font-size:13px;cursor:pointer}button:active{transform:scale(.98)}button:disabled{opacity:.45}
+.controls{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.controls button{flex:1}.primary{background:#0e4055;border-color:var(--cyan)}.notice{font-size:11px;color:var(--muted);line-height:1.5;margin:12px 2px 0}.error{color:#ffb5a9}
+@media(min-width:650px){main{padding-top:28px}.core{padding:26px}#chat{max-height:50dvh}.orb{width:145px;height:145px}}
+</style>
+</head>
+<body>
+<main>
+<header>
+  <div class="logo">J</div>
+  <div><h1>J.A.R.V.I.S.</h1><p>PERSONAL AI SYSTEM · V1.0</p></div>
+  <div class="status"><span class="dot" id="statusDot"></span><span id="statusText">CONECTANDO</span></div>
+</header>
+<section class="core">
+  <div class="orb" id="orb"><span>J</span></div>
+  <div class="tagline" id="tagline">Aguardando instruções, senhor.</div>
+</section>
+<section class="panel">
+  <div class="panelhead"><span>TERMINAL DE CONVERSA</span><button id="clearBtn" title="Apagar conversa">LIMPAR</button></div>
+  <div id="chat" aria-live="polite">
+    <div class="msg assistant">Bom dia. Sou o J.A.R.V.I.S. Seu sistema está carregado. Envie uma mensagem ou toque no microfone para começar.</div>
+  </div>
+  <form class="composer" id="form">
+    <input id="input" autocomplete="off" placeholder="Diga seu comando..." aria-label="Mensagem">
+    <button class="primary" id="sendBtn" type="submit">ENVIAR</button>
+  </form>
+</section>
+<div class="controls">
+  <button class="primary" id="micBtn">🎙️ FALAR</button>
+  <button id="voiceBtn">🔊 VOZ: LIGADA</button>
+  <button id="memoryBtn">🧠 MEMÓRIA</button>
+</div>
+<p class="notice" id="notice">A voz depende do suporte do navegador e das permissões do microfone. A memória fica neste dispositivo. A IA precisa ser configurada no servidor.</p>
+</main>
+<script>
+const $ = id => document.getElementById(id);
+const chat = $("chat"), input = $("input"), form = $("form"), sendBtn = $("sendBtn");
+let voiceOn = true, busy = false, recognizing = false;
+const KEY = "jarvis_v1_history";
+let history = [];
+try { history = JSON.parse(localStorage.getItem(KEY) || "[]"); } catch { history = []; }
+function saveHistory(){ try{localStorage.setItem(KEY,JSON.stringify(history.slice(-40)));}catch{} }
+function addMsg(role, content, save=true){
+  const div=document.createElement("div"); div.className="msg "+role; div.textContent=content; chat.appendChild(div); chat.scrollTop=chat.scrollHeight;
+  if(save){history.push({role:role==="user"?"user":"assistant",content});history=history.slice(-40);saveHistory();}
+  return div;
+}
+function renderHistory(){
+  chat.innerHTML="";
+  if(!history.length){addMsg("assistant","Sistema pronto. Como posso ajudar?",false);return;}
+  history.forEach(m=>{const d=document.createElement("div");d.className="msg "+(m.role==="user"?"user":"assistant");d.textContent=m.content;chat.appendChild(d);});
+  chat.scrollTop=chat.scrollHeight;
+}
+function speak(text){
+  if(!voiceOn || !("speechSynthesis" in window)) return;
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text);u.lang="pt-BR";u.rate=1.02;
+  const voices=speechSynthesis.getVoices();const pt=voices.find(v=>v.lang.toLowerCase().startsWith("pt-br"))||voices.find(v=>v.lang.toLowerCase().startsWith("pt"));
+  if(pt)u.voice=pt;speechSynthesis.speak(u);
+}
+async function health(){
+  try{const r=await fetch("/api/health");const d=await r.json();$("statusDot").style.background=d.configured?"#65e6a6":"#f2bd54";$("statusText").textContent=d.configured?"IA CONECTADA":"IA NÃO CONFIGURADA";$("notice").textContent=d.configured?"Sistema conectado. As mensagens são enviadas ao provedor de IA configurado. A memória do histórico permanece neste dispositivo.":"Configure AI_API_KEY no servidor para ativar respostas inteligentes. O microfone e a síntese de voz podem funcionar independentemente.";
+  }catch{$("statusDot").style.background="#ff7e70";$("statusText").textContent="SEM SERVIDOR";}
+}
+async function send(text){
+  text=(text||"").trim();if(!text||busy)return;
+  addMsg("user",text);input.value="";busy=true;sendBtn.disabled=true;$("micBtn").disabled=true;$("orb").classList.add("thinking");$("tagline").textContent="Analisando solicitação...";
+  try{
+    const messages=history.filter(m=>m.role==="user"||m.role==="assistant").slice(-20);
+    const r=await fetch("/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({messages})});
+    const d=await r.json();
+    if(!r.ok)throw new Error(d.error||"Falha ao consultar a IA.");
+    addMsg("assistant",d.answer);speak(d.answer);$("tagline").textContent="Pronto para a próxima instrução.";
+  }catch(e){addMsg("assistant","Não consegui completar a solicitação: "+e.message);$("tagline").textContent="Verifique a conexão e a configuração."; }
+  finally{busy=false;sendBtn.disabled=false;$("micBtn").disabled=false;$("orb").classList.remove("thinking");input.focus();}
+}
+form.addEventListener("submit",e=>{e.preventDefault();send(input.value);});
+$("clearBtn").addEventListener("click",()=>{if(confirm("Apagar o histórico local desta conversa?")){history=[];saveHistory();renderHistory();}});
+$("voiceBtn").addEventListener("click",()=>{voiceOn=!voiceOn;$("voiceBtn").textContent=voiceOn?"🔊 VOZ: LIGADA":"🔇 VOZ: DESLIGADA";if(!voiceOn&&"speechSynthesis"in window)speechSynthesis.cancel();});
+$("memoryBtn").addEventListener("click",()=>{alert("Memória atual: histórico de conversa salvo localmente neste navegador. Memória semântica e fatos permanentes ainda não estão implementados nesta versão.");});
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+if(!SR){$("micBtn").disabled=true;$("micBtn").textContent="🎙️ VOZ INDISPONÍVEL";}
+else{
+ const recognition=new SR();recognition.lang="pt-BR";recognition.interimResults=false;recognition.maxAlternatives=1;
+ recognition.onstart=()=>{recognizing=true;$("orb").classList.add("listening");$("tagline").textContent="Estou ouvindo...";$("micBtn").textContent="⏹️ OUVINDO";};
+ recognition.onresult=e=>{input.value=e.results[0][0].transcript;send(input.value);};
+ recognition.onerror=e=>{$("tagline").textContent="Não consegui ouvir ("+e.error+"). Tente novamente.";};
+ recognition.onend=()=>{recognizing=false;$("orb").classList.remove("listening");$("micBtn").textContent="🎙️ FALAR";};
+ $("micBtn").addEventListener("click",()=>{if(recognizing){recognition.stop();return;}try{recognition.start();}catch{}});
+}
+renderHistory();health();if("speechSynthesis"in window)speechSynthesis.getVoices();
+</script>
+</body>
+</html>
