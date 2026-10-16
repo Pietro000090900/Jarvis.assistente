@@ -13,9 +13,12 @@ function loadEnv() {
   }
 }
 loadEnv();
-
+const http = require("http");
+const fs = require("fs");
+const path = require("path");
+const PUBLIC = __dirname;
 const PORT = Number(process.env.PORT || 3000);
-const PUBLIC = path.join(__dirname, "public");
+
 const MAX_BODY = 100_000;
 
 const server = http.createServer(async (req, res) => {
