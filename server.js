@@ -13,9 +13,6 @@ function loadEnv() {
   }
 }
 loadEnv();
-const http = require("http");
-const fs = require("fs");
-const path = require("path");
 const PUBLIC = __dirname;
 const PORT = Number(process.env.PORT || 3000);
 
