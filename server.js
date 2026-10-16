@@ -23,7 +23,7 @@ const server = http.createServer(async (req, res) => {
   res.setHeader("Referrer-Policy", "no-referrer");
   res.setHeader("X-Frame-Options", "DENY");
 
-  if (req.url === "/api/health" && req.method === "GET") {
+  if (new URL(req.url, "http://localhost").pathname.replace(/\/+$/, "") === "/api/health" && req.method === "GET") {
     res.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
     return res.end(JSON.stringify({
       ok: true,
@@ -32,7 +32,7 @@ const server = http.createServer(async (req, res) => {
     }));
   }
 
-  if (req.url === "/api/chat" && req.method === "POST") {
+  if (new URL(req.url, "http://localhost").pathname.replace(/\/+$/, "") === "/api/chat" && req.method === "POST") {
     if (!process.env.AI_API_KEY) {
       res.writeHead(503, { "Content-Type": "application/json; charset=utf-8" });
       return res.end(JSON.stringify({ error: "A IA ainda não foi configurada no servidor. Configure AI_API_KEY." }));
